@@ -1,0 +1,100 @@
+{
+  "projectName": "Planora",
+  "description": "An event planning platform where users can explore services, book vendors, and manage event planning seamlessly.",
+  "techStack": {
+    "frontend": ["React", "TailwindCSS", "Framer Motion"],
+    "backend": ["Firebase Firestore", "Firebase Authentication", "Firebase Storage"],
+    "deployment": ["Vercel or Firebase Hosting"]
+  },
+  "features": {
+    "authentication": {
+      "loginSignup": ["Email/Password", "Google Sign-In"],
+      "profileManagement": true,
+      "firebaseIntegration": true
+    },
+    "homePage": {
+      "heroSection": {
+        "title": "Planora",
+        "subtitle": "Plan your events perfectly",
+        "buttons": ["Get Started", "Learn More"],
+        "backgroundImage": true
+      },
+      "searchBar": {
+        "placeholder": "Search for services..."
+      },
+      "navigationMenu": ["Home", "Orders", "Post Order", "AI Assistant", "Profile", "Messages", "Cart"]
+    },
+    "popularCities": {
+      "sectionTitle": "Popular Cities",
+      "cities": ["Chennai", "Madurai", "Kanchi", "Thanjavur", "Coimbatore", "Tirunelveli", "Trichy", "Hosur", "Kodaikanal", "Thoothukudi"]
+    },
+    "categories": {
+      "sectionTitle": "Explore All Categories",
+      "categoriesList": ["Catering", "Venue", "Return Gift", "Travel", "DJ", "Cakes & Bakery", "Decoration", "Orchestra"],
+      "searchCategories": true
+    },
+    "orders": {
+      "viewOrders": true,
+      "postOrder": true,
+      "firebaseDatabase": "ordersCollection"
+    },
+    "cart": {
+      "addToCart": true,
+      "removeFromCart": true,
+      "checkoutIntegration": "Firebase Firestore"
+    },
+    "messages": {
+      "userToVendorChat": true,
+      "firebaseRealtime": true
+    },
+    "aiAssistant": {
+      "description": "Smart assistant to help users with event planning, vendor suggestions, and FAQs.",
+      "chatInterface": true
+    },
+    "profile": {
+      "viewProfile": true,
+      "editProfile": true,
+      "firebaseStorage": "userProfiles"
+    }
+  },
+  "databaseStructure": {
+    "users": {
+      "userId": {
+        "name": "string",
+        "email": "string",
+        "phone": "string",
+        "savedOrders": ["orderId"],
+        "cart": ["serviceId"]
+      }
+    },
+    "orders": {
+      "orderId": {
+        "userId": "string",
+        "serviceId": "string",
+        "status": "pending/confirmed/completed",
+        "date": "timestamp"
+      }
+    },
+    "services": {
+      "serviceId": {
+        "name": "string",
+        "category": "string",
+        "city": "string",
+        "priceRange": "string",
+        "vendorId": "string"
+      }
+    },
+    "messages": {
+      "chatId": {
+        "participants": ["userId", "vendorId"],
+        "messages": [
+          {
+            "senderId": "string",
+            "text": "string",
+            "timestamp": "timestamp"
+          }
+        ]
+      }
+    }
+  }
+}
