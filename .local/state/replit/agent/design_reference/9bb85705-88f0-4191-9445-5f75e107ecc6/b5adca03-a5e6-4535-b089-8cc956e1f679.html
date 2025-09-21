@@ -1,0 +1,623 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planora - Plan Your Events Perfectly</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#F5F3FF',
+                            100: '#EDE9FE',
+                            500: '#7C3AED',
+                            600: '#6D28D9',
+                            700: '#5B21B6'
+                        }
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-white font-sans">
+    <!-- @COMPONENT: Header [navigation, authentication] -->
+    <header class="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold text-primary-600">Planora</h1>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#" class="text-gray-900 font-medium border-b-2 border-primary-500 pb-1">Home</a>
+                    <a href="#" class="text-gray-600 hover:text-gray-900 transition-colors" data-event="click:navigateToOrders">Orders</a>
+                    <a href="#" class="text-gray-600 hover:text-gray-900 transition-colors" data-event="click:navigateToPostOrder">Post Order</a>
+                    <a href="#" class="text-gray-600 hover:text-gray-900 transition-colors" data-event="click:navigateToAI">AI Assistant</a>
+                    <a href="#" class="text-gray-600 hover:text-gray-900 transition-colors" data-event="click:navigateToMessages">Messages</a>
+                </nav>
+
+                <!-- User Actions -->
+                <div class="flex items-center space-x-4">
+                    <!-- Cart -->
+                    <button class="relative text-gray-600 hover:text-gray-900 transition-colors" data-event="click:toggleCart">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span class="absolute -top-2 -right-2 bg-primary-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center" data-bind="cart.itemCount">2</span>
+                    </button>
+
+                    <!-- Profile Dropdown -->
+                    <div class="relative">
+                        <button class="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors" data-event="click:toggleProfileMenu">
+                            <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-primary-600"></i>
+                            </div>
+                        </button>
+                    </div>
+
+                    <!-- Mobile Menu Button -->
+                    <button class="md:hidden text-gray-600 hover:text-gray-900" data-event="click:toggleMobileMenu">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- @END_COMPONENT: Header -->
+
+    <!-- @COMPONENT: Hero Section [search, CTA] -->
+    <section class="relative bg-gradient-to-r from-primary-600 via-blue-600 to-primary-700 text-white">
+        <!-- Modern geometric background pattern with event planning theme -->
+        <div class="absolute inset-0 bg-black bg-opacity-20"></div>
+        <div class="absolute inset-0" style="background-image: url('https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1920&h=1080'); background-size: cover; background-position: center; opacity: 0.3;"></div>
+        
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-6xl font-bold mb-6">
+                    Plan Your Events <span class="text-yellow-300">Perfectly</span>
+                </h1>
+                <p class="text-xl md:text-2xl mb-12 text-gray-100 max-w-3xl mx-auto">
+                    Discover the best vendors, venues, and services for your special occasions. From weddings to corporate events, we've got you covered.
+                </p>
+
+                <!-- Search Bar -->
+                <div class="max-w-4xl mx-auto mb-12">
+                    <div class="bg-white rounded-2xl shadow-2xl p-6 md:p-8">
+                        <div class="flex flex-col md:flex-row gap-4">
+                            <div class="flex-1">
+                                <input 
+                                    type="text" 
+                                    placeholder="Search for services..." 
+                                    class="w-full px-6 py-4 text-gray-900 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent text-lg"
+                                    data-bind="searchQuery"
+                                />
+                            </div>
+                            <div class="flex-1">
+                                <select class="w-full px-6 py-4 text-gray-900 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent text-lg">
+                                    <option>Select City</option>
+                                    <option>Chennai</option>
+                                    <option>Madurai</option>
+                                    <option>Kanchi</option>
+                                    <option>Thanjavur</option>
+                                </select>
+                            </div>
+                            <button class="bg-primary-600 hover:bg-primary-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105" data-event="click:performSearch">
+                                <i class="fas fa-search mr-2"></i>
+                                Search
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CTA Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <button class="bg-white text-primary-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-50 transition-all transform hover:scale-105 shadow-lg" data-event="click:getStarted">
+                        Get Started
+                    </button>
+                    <button class="border-2 border-white text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white hover:text-primary-600 transition-all" data-event="click:learnMore">
+                        Learn More
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: Hero Section -->
+
+    <!-- @COMPONENT: Popular Cities [city navigation] -->
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Popular Cities</h2>
+                <p class="text-xl text-gray-600">Discover amazing services in these top destinations</p>
+            </div>
+
+            <!-- @MAP: cities.map(city => ( -->
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
+                <!-- Chennai -->
+                <div class="group cursor-pointer" data-event="click:filterByCity" data-city="Chennai">
+                    <!-- Beautiful view of Chennai Marina Beach with city skyline -->
+                    <div class="relative overflow-hidden rounded-2xl shadow-lg transition-all group-hover:shadow-xl group-hover:scale-105">
+                        <img src="https://images.unsplash.com/photo-1582510003544-4d00b7f74220?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=300" alt="Chennai Marina Beach" class="w-full h-40 object-cover" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                        <div class="absolute bottom-4 left-4">
+                            <h3 class="text-white font-semibold text-lg">Chennai</h3>
+                            <p class="text-gray-200 text-sm">250+ Services</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Madurai -->
+                <div class="group cursor-pointer" data-event="click:filterByCity" data-city="Madurai">
+                    <!-- Historic Meenakshi Temple with traditional South Indian architecture -->
+                    <div class="relative overflow-hidden rounded-2xl shadow-lg transition-all group-hover:shadow-xl group-hover:scale-105">
+                        <img src="https://pixabay.com/get/gbfdfe290662ee22388b021175e5885bad0474865e8f3057f9a90124f17455bf1e6afbcf33b21033f93535de898046b1573aee07011e9463653e720001c09c25b_1280.jpg" alt="Meenakshi Temple Madurai" class="w-full h-40 object-cover" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                        <div class="absolute bottom-4 left-4">
+                            <h3 class="text-white font-semibold text-lg">Madurai</h3>
+                            <p class="text-gray-200 text-sm">180+ Services</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coimbatore -->
+                <div class="group cursor-pointer" data-event="click:filterByCity" data-city="Coimbatore">
+                    <!-- Scenic hill station view with lush greenery typical of Coimbatore region -->
+                    <div class="relative overflow-hidden rounded-2xl shadow-lg transition-all group-hover:shadow-xl group-hover:scale-105">
+                        <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=300" alt="Coimbatore hills and greenery" class="w-full h-40 object-cover" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                        <div class="absolute bottom-4 left-4">
+                            <h3 class="text-white font-semibold text-lg">Coimbatore</h3>
+                            <p class="text-gray-200 text-sm">160+ Services</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trichy -->
+                <div class="group cursor-pointer" data-event="click:filterByCity" data-city="Trichy">
+                    <!-- Rock Fort Temple showcasing Trichy's heritage and architecture -->
+                    <div class="relative overflow-hidden rounded-2xl shadow-lg transition-all group-hover:shadow-xl group-hover:scale-105">
+                        <img src="https://images.unsplash.com/photo-1574914629385-46448b767aec?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=300" alt="Rock Fort Temple Trichy" class="w-full h-40 object-cover" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                        <div class="absolute bottom-4 left-4">
+                            <h3 class="text-white font-semibold text-lg">Trichy</h3>
+                            <p class="text-gray-200 text-sm">120+ Services</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kodaikanal -->
+                <div class="group cursor-pointer" data-event="click:filterByCity" data-city="Kodaikanal">
+                    <!-- Serene mountain lake view representing Kodaikanal's natural beauty -->
+                    <div class="relative overflow-hidden rounded-2xl shadow-lg transition-all group-hover:shadow-xl group-hover:scale-105">
+                        <img src="https://images.unsplash.com/photo-1506197603052-3cc9c3a201bd?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=300" alt="Kodaikanal lake and mountains" class="w-full h-40 object-cover" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                        <div class="absolute bottom-4 left-4">
+                            <h3 class="text-white font-semibold text-lg">Kodaikanal</h3>
+                            <p class="text-gray-200 text-sm">85+ Services</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_MAP )) -->
+        </div>
+    </section>
+    <!-- @END_COMPONENT: Popular Cities -->
+
+    <!-- @COMPONENT: Categories [service browsing] -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Explore All Categories</h2>
+                <p class="text-xl text-gray-600">Find the perfect services for your event</p>
+            </div>
+
+            <!-- @MAP: categories.map(category => ( -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <!-- Catering -->
+                <div class="group text-center cursor-pointer" data-event="click:filterByCategory" data-category="Catering">
+                    <div class="bg-gradient-to-br from-orange-100 to-red-100 rounded-3xl p-8 mb-4 group-hover:shadow-lg transition-all group-hover:scale-105">
+                        <i class="fas fa-utensils text-4xl text-orange-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Catering</h3>
+                        <p class="text-gray-600">Delicious food for every occasion</p>
+                    </div>
+                </div>
+
+                <!-- Venue -->
+                <div class="group text-center cursor-pointer" data-event="click:filterByCategory" data-category="Venue">
+                    <div class="bg-gradient-to-br from-blue-100 to-indigo-100 rounded-3xl p-8 mb-4 group-hover:shadow-lg transition-all group-hover:scale-105">
+                        <i class="fas fa-building text-4xl text-blue-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Venue</h3>
+                        <p class="text-gray-600">Perfect spaces for your events</p>
+                    </div>
+                </div>
+
+                <!-- Decoration -->
+                <div class="group text-center cursor-pointer" data-event="click:filterByCategory" data-category="Decoration">
+                    <div class="bg-gradient-to-br from-pink-100 to-purple-100 rounded-3xl p-8 mb-4 group-hover:shadow-lg transition-all group-hover:scale-105">
+                        <i class="fas fa-magic text-4xl text-pink-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Decoration</h3>
+                        <p class="text-gray-600">Beautiful themes and setups</p>
+                    </div>
+                </div>
+
+                <!-- DJ -->
+                <div class="group text-center cursor-pointer" data-event="click:filterByCategory" data-category="DJ">
+                    <div class="bg-gradient-to-br from-green-100 to-teal-100 rounded-3xl p-8 mb-4 group-hover:shadow-lg transition-all group-hover:scale-105">
+                        <i class="fas fa-music text-4xl text-green-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">DJ</h3>
+                        <p class="text-gray-600">Music that moves your crowd</p>
+                    </div>
+                </div>
+
+                <!-- Return Gift -->
+                <div class="group text-center cursor-pointer" data-event="click:filterByCategory" data-category="Return Gift">
+                    <div class="bg-gradient-to-br from-yellow-100 to-orange-100 rounded-3xl p-8 mb-4 group-hover:shadow-lg transition-all group-hover:scale-105">
+                        <i class="fas fa-gift text-4xl text-yellow-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Return Gift</h3>
+                        <p class="text-gray-600">Memorable gifts for guests</p>
+                    </div>
+                </div>
+
+                <!-- Travel -->
+                <div class="group text-center cursor-pointer" data-event="click:filterByCategory" data-category="Travel">
+                    <div class="bg-gradient-to-br from-cyan-100 to-blue-100 rounded-3xl p-8 mb-4 group-hover:shadow-lg transition-all group-hover:scale-105">
+                        <i class="fas fa-plane text-4xl text-cyan-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Travel</h3>
+                        <p class="text-gray-600">Transportation solutions</p>
+                    </div>
+                </div>
+
+                <!-- Cakes & Bakery -->
+                <div class="group text-center cursor-pointer" data-event="click:filterByCategory" data-category="Cakes">
+                    <div class="bg-gradient-to-br from-red-100 to-pink-100 rounded-3xl p-8 mb-4 group-hover:shadow-lg transition-all group-hover:scale-105">
+                        <i class="fas fa-birthday-cake text-4xl text-red-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Cakes & Bakery</h3>
+                        <p class="text-gray-600">Sweet treats for celebrations</p>
+                    </div>
+                </div>
+
+                <!-- Orchestra -->
+                <div class="group text-center cursor-pointer" data-event="click:filterByCategory" data-category="Orchestra">
+                    <div class="bg-gradient-to-br from-purple-100 to-indigo-100 rounded-3xl p-8 mb-4 group-hover:shadow-lg transition-all group-hover:scale-105">
+                        <i class="fas fa-drum text-4xl text-purple-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Orchestra</h3>
+                        <p class="text-gray-600">Live music performances</p>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_MAP )) -->
+        </div>
+    </section>
+    <!-- @END_COMPONENT: Categories -->
+
+    <!-- @COMPONENT: Featured Services [service showcase] -->
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Featured Services</h2>
+                <p class="text-xl text-gray-600">Top-rated services from verified vendors</p>
+            </div>
+
+            <!-- @MAP: featuredServices.map(service => ( -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Service Card 1 - Wedding Venue -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden group cursor-pointer transition-all hover:shadow-xl hover:-translate-y-1" data-event="click:viewService">
+                    <!-- Elegant wedding venue with beautiful floral arrangements -->
+                    <img src="https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=400" alt="Elegant wedding venue" class="w-full h-48 object-cover group-hover:scale-105 transition-transform" />
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">Venue</span>
+                            <div class="flex items-center">
+                                <i class="fas fa-star text-yellow-500 text-sm mr-1"></i>
+                                <span class="text-sm font-medium text-gray-700" data-bind="service.rating">4.8</span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2" data-bind="service.name">Grand Palace Wedding Hall</h3>
+                        <p class="text-gray-600 mb-4" data-bind="service.description">Luxurious wedding venue with premium amenities and beautiful decor</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-2xl font-bold text-primary-600" data-bind="service.price">₹25,000</span>
+                            <button class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors" data-event="click:addToCart">
+                                <i class="fas fa-plus mr-2"></i>Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Card 2 - Catering -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden group cursor-pointer transition-all hover:shadow-xl hover:-translate-y-1" data-event="click:viewService">
+                    <!-- Professional catering setup with variety of delicious dishes -->
+                    <img src="https://images.unsplash.com/photo-1555244162-803834f70033?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=400" alt="Professional catering service" class="w-full h-48 object-cover group-hover:scale-105 transition-transform" />
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="bg-orange-100 text-orange-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">Catering</span>
+                            <div class="flex items-center">
+                                <i class="fas fa-star text-yellow-500 text-sm mr-1"></i>
+                                <span class="text-sm font-medium text-gray-700" data-bind="service.rating">4.9</span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2" data-bind="service.name">Royal Feast Catering</h3>
+                        <p class="text-gray-600 mb-4" data-bind="service.description">Traditional and modern cuisine for all types of events</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-2xl font-bold text-primary-600" data-bind="service.price">₹450/person</span>
+                            <button class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors" data-event="click:addToCart">
+                                <i class="fas fa-plus mr-2"></i>Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Card 3 - Decoration -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden group cursor-pointer transition-all hover:shadow-xl hover:-translate-y-1" data-event="click:viewService">
+                    <!-- Stunning party decoration with balloons and colorful setup -->
+                    <img src="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=400" alt="Beautiful party decoration" class="w-full h-48 object-cover group-hover:scale-105 transition-transform" />
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="bg-pink-100 text-pink-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">Decoration</span>
+                            <div class="flex items-center">
+                                <i class="fas fa-star text-yellow-500 text-sm mr-1"></i>
+                                <span class="text-sm font-medium text-gray-700" data-bind="service.rating">4.7</span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2" data-bind="service.name">Magical Moments Decor</h3>
+                        <p class="text-gray-600 mb-4" data-bind="service.description">Creative themes and stunning decorations for memorable events</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-2xl font-bold text-primary-600" data-bind="service.price">₹15,000</span>
+                            <button class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors" data-event="click:addToCart">
+                                <i class="fas fa-plus mr-2"></i>Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Card 4 - DJ -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden group cursor-pointer transition-all hover:shadow-xl hover:-translate-y-1" data-event="click:viewService">
+                    <!-- Professional DJ setup with lighting and sound equipment -->
+                    <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=400" alt="Professional DJ setup" class="w-full h-48 object-cover group-hover:scale-105 transition-transform" />
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">DJ</span>
+                            <div class="flex items-center">
+                                <i class="fas fa-star text-yellow-500 text-sm mr-1"></i>
+                                <span class="text-sm font-medium text-gray-700" data-bind="service.rating">4.8</span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2" data-bind="service.name">Beat Masters DJ</h3>
+                        <p class="text-gray-600 mb-4" data-bind="service.description">High-energy music and professional sound systems</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-2xl font-bold text-primary-600" data-bind="service.price">₹8,000</span>
+                            <button class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors" data-event="click:addToCart">
+                                <i class="fas fa-plus mr-2"></i>Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Card 5 - Wedding Cake -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden group cursor-pointer transition-all hover:shadow-xl hover:-translate-y-1" data-event="click:viewService">
+                    <!-- Elegant multi-tier wedding cake with beautiful decorations -->
+                    <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=400" alt="Beautiful wedding cake" class="w-full h-48 object-cover group-hover:scale-105 transition-transform" />
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">Cakes</span>
+                            <div class="flex items-center">
+                                <i class="fas fa-star text-yellow-500 text-sm mr-1"></i>
+                                <span class="text-sm font-medium text-gray-700" data-bind="service.rating">4.9</span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2" data-bind="service.name">Sweet Dreams Bakery</h3>
+                        <p class="text-gray-600 mb-4" data-bind="service.description">Custom wedding cakes and delicious desserts</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-2xl font-bold text-primary-600" data-bind="service.price">₹5,500</span>
+                            <button class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors" data-event="click:addToCart">
+                                <i class="fas fa-plus mr-2"></i>Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Card 6 - Return Gifts -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden group cursor-pointer transition-all hover:shadow-xl hover:-translate-y-1" data-event="click:viewService">
+                    <!-- Elegant gift boxes and return gifts display -->
+                    <img src="https://images.unsplash.com/photo-1549465220-1a8b9238cd48?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=400" alt="Elegant return gifts" class="w-full h-48 object-cover group-hover:scale-105 transition-transform" />
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">Return Gift</span>
+                            <div class="flex items-center">
+                                <i class="fas fa-star text-yellow-500 text-sm mr-1"></i>
+                                <span class="text-sm font-medium text-gray-700" data-bind="service.rating">4.6</span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2" data-bind="service.name">Memorable Gifts Co.</h3>
+                        <p class="text-gray-600 mb-4" data-bind="service.description">Unique and personalized gifts for your guests</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-2xl font-bold text-primary-600" data-bind="service.price">₹150/piece</span>
+                            <button class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors" data-event="click:addToCart">
+                                <i class="fas fa-plus mr-2"></i>Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_MAP )) -->
+
+            <div class="text-center mt-12">
+                <button class="bg-primary-600 text-white px-8 py-3 rounded-xl font-semibold text-lg hover:bg-primary-700 transition-colors" data-event="click:viewAllServices">
+                    View All Services
+                </button>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: Featured Services -->
+
+    <!-- @COMPONENT: AI Assistant CTA [smart assistance] -->
+    <section class="py-16 bg-gradient-to-r from-primary-600 to-blue-600 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <div class="mb-8">
+                    <i class="fas fa-robot text-6xl text-yellow-300 mb-4"></i>
+                </div>
+                <h2 class="text-3xl md:text-4xl font-bold mb-6">Meet Your AI Event Assistant</h2>
+                <p class="text-xl mb-8 max-w-3xl mx-auto">
+                    Get personalized recommendations, budget planning, and instant answers to all your event planning questions. Our AI assistant is here to make your planning process effortless.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button class="bg-white text-primary-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-50 transition-all transform hover:scale-105" data-event="click:startAIChat">
+                        <i class="fas fa-comments mr-2"></i>
+                        Start Planning with AI
+                    </button>
+                    <button class="border-2 border-white text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white hover:text-primary-600 transition-all" data-event="click:learnMoreAI">
+                        Learn More
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: AI Assistant CTA -->
+
+    <!-- @COMPONENT: Footer [links, contact, legal] -->
+    <footer class="bg-gray-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Company Info -->
+                <div class="col-span-1 md:col-span-2">
+                    <h3 class="text-2xl font-bold mb-4">Planora</h3>
+                    <p class="text-gray-300 mb-6 max-w-md">
+                        Your trusted partner for perfect event planning. We connect you with the best vendors and services to make your special occasions unforgettable.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-facebook text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">About Us</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">How It Works</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Become a Vendor</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Help Center</a></li>
+                    </ul>
+                </div>
+
+                <!-- Support -->
+                <div>
+                    <h4 class="font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Terms of Service</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center">
+                <p class="text-gray-400">© 2024 Planora. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <!-- @END_COMPONENT: Footer -->
+
+    <!-- @COMPONENT: Authentication Modal [login/signup] -->
+    <!-- @STATE: isAuthModalOpen:boolean = false -->
+    <div id="authModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center" data-modal="auth">
+        <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Welcome to Planora</h2>
+                <p class="text-gray-600">Sign in to start planning your perfect event</p>
+            </div>
+
+            <!-- Auth Tabs -->
+            <div class="flex mb-6">
+                <button class="flex-1 py-2 px-4 text-center border-b-2 border-primary-500 text-primary-600 font-semibold" data-tab="login">Sign In</button>
+                <button class="flex-1 py-2 px-4 text-center border-b-2 border-gray-200 text-gray-500" data-tab="signup">Sign Up</button>
+            </div>
+
+            <!-- Login Form -->
+            <form class="space-y-4" data-form="login">
+                <div>
+                    <input type="email" placeholder="Email address" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" data-bind="auth.email" />
+                </div>
+                <div>
+                    <input type="password" placeholder="Password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" data-bind="auth.password" />
+                </div>
+                <button type="submit" class="w-full bg-primary-600 text-white py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors" data-event="click:handleLogin">
+                    Sign In
+                </button>
+            </form>
+
+            <!-- Google Sign In -->
+            <div class="mt-6">
+                <button class="w-full border border-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors flex items-center justify-center" data-event="click:handleGoogleAuth">
+                    <i class="fab fa-google mr-2"></i>
+                    Continue with Google
+                </button>
+            </div>
+
+            <!-- Close Modal -->
+            <button class="absolute top-4 right-4 text-gray-400 hover:text-gray-600" data-event="click:closeModal">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: Authentication Modal -->
+
+    <script>
+        // TODO: Implement React component state management
+        // TODO: Implement Firebase authentication
+        // TODO: Implement Firestore database operations
+        // TODO: Implement cart functionality
+        // TODO: Implement search and filtering
+        // TODO: Implement messaging system
+        // TODO: Implement AI assistant chat
+        
+        (function() {
+            // Mock interactivity for demonstration
+            console.log('Planora event planning platform loaded');
+            
+            // Modal functionality
+            const authModal = document.getElementById('authModal');
+            
+            // Add event listeners for demonstration
+            document.addEventListener('click', function(e) {
+                const target = e.target.closest('[data-event]');
+                if (target) {
+                    const event = target.getAttribute('data-event');
+                    console.log('Event triggered:', event);
+                    
+                    // Handle specific events
+                    if (event === 'click:getStarted') {
+                        authModal?.classList.remove('hidden');
+                        authModal?.classList.add('flex');
+                    } else if (event === 'click:closeModal') {
+                        authModal?.classList.add('hidden');
+                        authModal?.classList.remove('flex');
+                    }
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

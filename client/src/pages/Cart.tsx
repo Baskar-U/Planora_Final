@@ -37,7 +37,7 @@ export default function Cart() {
     return unsubscribe;
   }, []);
 
-  const { data: cartItems = [], isLoading } = useQuery({
+  const { data: cartItemsData, isLoading } = useQuery({
     queryKey: ["/api/cart", user?.uid],
     enabled: !!user,
     select: async (data: any[]) => {
@@ -57,6 +57,9 @@ export default function Cart() {
       return itemsWithServices.filter(item => item.service) as CartItemWithService[];
     },
   });
+
+  // Ensure cartItems is always an array
+  const cartItems = Array.isArray(cartItemsData) ? cartItemsData : [];
 
   const removeFromCartMutation = useMutation({
     mutationFn: async ({ serviceId }: { serviceId: string }) => {

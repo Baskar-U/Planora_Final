@@ -1,0 +1,178 @@
+# Firestore Security Rules for Package Updates
+
+## Collection: postorder
+## Purpose: Allow vendors to update their packages while maintaining data integrity
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Allow vendors to read and update their own service documents
+    match /postorder/{documentId} {
+      // Allow read access to all authenticated users (for browsing vendors)
+      allow read: if request.auth != null;
+      
+      // Allow write access only to the vendor who owns the document
+      allow write: if request.auth != null 
+        && (
+          // Check if the user is the vendor (using vendorId field)
+          request.auth.uid == resource.data.vendorId
+          // OR check if the user is the vendor (using vendorid field - alternative naming)
+          || request.auth.uid == resource.data.vendorid
+          // OR check if the user's email matches the vendor's email
+          || request.auth.token.email == resource.data.email
+        );
+      
+      // Specific rules for package updates
+      allow update: if request.auth != null 
+        && (
+          request.auth.uid == resource.data.vendorId
+          || request.auth.uid == resource.data.vendorid
+          || request.auth.token.email == resource.data.email
+        )
+        // Ensure packages array is properly structured
+        && request.resource.data.packages is list
+        && request.resource.data.packages.size() <= 10  // Limit to 10 packages per vendor
+        // Validate each package in the array
+        && request.resource.data.packages.every(pkg => 
+          pkg.keys().hasAll(['id', 'name', 'description', 'originalPrice', 'discountedPrice', 'discount', 'features', 'isActive'])
+          && pkg.id is string
+          && pkg.name is string
+          && pkg.description is string
+          && pkg.originalPrice is number
+          && pkg.discountedPrice is number
+          && pkg.discount is number
+          && pkg.features is list
+          && pkg.isActive is bool
+          && pkg.originalPrice > 0
+          && pkg.discountedPrice > 0
+          && pkg.discount >= 0
+          && pkg.discount <= 100
+        );
+    }
+    
+    // Allow vendors to read their own bookings
+    match /bookings/{bookingId} {
+      allow read: if request.auth != null 
+        && (
+          request.auth.uid == resource.data.vendorId
+          || request.auth.uid == resource.data.vendorid
+        );
+      allow update: if request.auth != null 
+        && (
+          request.auth.uid == resource.data.vendorId
+          || request.auth.uid == resource.data.vendorid
+        );
+    }
+    
+    // Allow vendors to read and update pending payments
+    match /pendingPayments/{paymentId} {
+      allow read, update: if request.auth != null 
+        && request.auth.uid == resource.data.vendorId;
+    }
+    
+    // Allow vendors to read and update notifications
+    match /notifications/{notificationId} {
+      allow read, update: if request.auth != null 
+        && request.auth.uid == resource.data.userId;
+    }
+    
+    // Allow customers to read and update their own notifications
+    match /customerNotifications/{notificationId} {
+      allow read, update: if request.auth != null 
+        && request.auth.token.email == resource.data.customerEmail;
+    }
+  }
+}
+
+## Storage Security Rules for Package Images
+
+# Firebase Storage Rules for Package Images
+# Path: /package-images/{vendorId}/{packageId}/{imageName}
+
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Allow vendors to upload and manage their package images
+    match /package-images/{vendorId}/{packageId}/{imageName} {
+      // Allow read access to all authenticated users
+      allow read: if request.auth != null;
+      
+      // Allow write access only to the vendor who owns the package
+      allow write: if request.auth != null 
+        && request.auth.uid == vendorId
+        && request.resource.size < 5 * 1024 * 1024  // 5MB limit
+        && request.resource.contentType.matches('image/.*');
+      
+      // Allow delete only by the vendor
+      allow delete: if request.auth != null 
+        && request.auth.uid == vendorId;
+    }
+    
+    // Allow vendors to upload and manage their service cover images
+    match /service-images/{vendorId}/{imageName} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null 
+        && request.auth.uid == vendorId
+        && request.resource.size < 10 * 1024 * 1024  // 10MB limit
+        && request.resource.contentType.matches('image/.*');
+      allow delete: if request.auth != null 
+        && request.auth.uid == vendorId;
+    }
+  }
+}
+
+## Database Schema Validation Rules
+
+### Package Structure Validation:
+- id: string (required, unique)
+- name: string (required, max 100 characters)
+- description: string (required, max 500 characters)
+- originalPrice: number (required, > 0)
+- discountedPrice: number (required, > 0)
+- discount: number (required, 0-100)
+- features: array (required, max 10 items)
+- isActive: boolean (required)
+- category: string (required, must match vendor category)
+- capacity: number (optional, for catering packages)
+- priceUnit: string (optional, for non-catering packages)
+
+### Category-Specific Fields:
+- Catering: mealDetails (breakfast, lunch, dinner with pricing)
+- Decoration: decorationDetails (flowers, lighting, theme)
+- Photography: photographyDetails (perEvent, perHour pricing)
+- DJ: djDetails (perEvent, perHour pricing)
+- Cakes: cakeDetails (flavors, size, design)
+- Travel: travelDetails (source, destination, days, areas, pricing)
+
+## Usage Instructions:
+
+1. **Deploy Firestore Rules:**
+   ```bash
+   firebase deploy --only firestore:rules
+   ```
+
+2. **Deploy Storage Rules:**
+   ```bash
+   firebase deploy --only storage
+   ```
+
+3. **Test the rules in Firebase Console:**
+   - Go to Firestore Database > Rules
+   - Use the Rules Playground to test different scenarios
+
+4. **Monitor rule violations:**
+   - Check Firebase Console > Functions > Logs
+   - Monitor for any rule violations or errors
+
+## Security Considerations:
+
+1. **Authentication Required:** All operations require user authentication
+2. **Authorization:** Users can only modify their own data
+3. **Data Validation:** Package data is validated before storage
+4. **File Size Limits:** Image uploads are limited to prevent abuse
+5. **Rate Limiting:** Consider implementing rate limiting for package updates
+6. **Audit Logging:** Consider adding audit logs for package changes
+
+
+

@@ -1,14 +1,13 @@
 import { useLocation } from "wouter";
 import { 
   Utensils, 
-  Building, 
   Sparkles, 
   Music, 
-  Gift, 
   Car, 
-  Cake, 
-  Music4 
+  Cake
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
 
 export default function Categories() {
   const [, setLocation] = useLocation();
@@ -20,13 +19,6 @@ export default function Categories() {
       icon: Utensils,
       gradient: "from-orange-100 to-red-100",
       iconColor: "text-orange-600"
-    },
-    {
-      name: "Venue",
-      description: "Perfect spaces for your events",
-      icon: Building,
-      gradient: "from-blue-100 to-indigo-100",
-      iconColor: "text-blue-600"
     },
     {
       name: "Decoration",
@@ -43,13 +35,6 @@ export default function Categories() {
       iconColor: "text-green-600"
     },
     {
-      name: "Return Gift",
-      description: "Memorable gifts for guests",
-      icon: Gift,
-      gradient: "from-yellow-100 to-orange-100",
-      iconColor: "text-yellow-600"
-    },
-    {
       name: "Travel",
       description: "Transportation solutions",
       icon: Car,
@@ -64,28 +49,32 @@ export default function Categories() {
       iconColor: "text-red-600"
     },
     {
-      name: "Orchestra",
-      description: "Live music performances",
-      icon: Music4,
-      gradient: "from-purple-100 to-indigo-100",
-      iconColor: "text-purple-600"
+      name: "Photography",
+      description: "Capture moments that matter",
+      icon: Music, // reuse icon pack; ideally a camera icon if available
+      gradient: "from-blue-100 to-indigo-100",
+      iconColor: "text-blue-600"
     }
   ];
 
   const handleCategoryClick = (categoryName: string) => {
-    setLocation(`/?category=${categoryName}`);
+    setLocation(`/vendors?category=${encodeURIComponent(categoryName)}`);
   };
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Explore All Categories</h2>
-          <p className="text-xl text-gray-600">Find the perfect services for your event</p>
+        <div className="text-center mb-8 sm:mb-12">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
+            Explore All Categories
+          </h2>
+          <p className="text-lg sm:text-xl text-gray-600 px-4">
+            Find the perfect services for your event
+          </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          {categories.map((category) => {
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+          {categories.map((category, index) => {
             const IconComponent = category.icon;
             return (
               <div
@@ -102,6 +91,8 @@ export default function Categories() {
             );
           })}
         </div>
+
+        {/* Removed Browse All Categories button as requested */}
       </div>
     </section>
   );

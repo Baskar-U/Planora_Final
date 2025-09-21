@@ -3,6 +3,8 @@ import {
   type InsertUser,
   type Service,
   type InsertService,
+  type Postorder,
+  type InsertPostorder,
   type Order,
   type InsertOrder,
   type CartItem,
@@ -27,6 +29,16 @@ export interface IStorage {
   searchServices(query: string): Promise<Service[]>;
   createService(service: InsertService): Promise<Service>;
   
+  // Postorder (Vendor Services)
+  getPostorders(): Promise<Postorder[]>;
+  getPostorder(id: string): Promise<Postorder | undefined>;
+  getPostordersByVendor(vendorId: string): Promise<Postorder[]>;
+  getPostordersByCategory(category: string): Promise<Postorder[]>;
+  getPostordersByLocation(location: string): Promise<Postorder[]>;
+  searchPostorders(query: string): Promise<Postorder[]>;
+  createPostorder(postorder: InsertPostorder): Promise<Postorder>;
+  updatePostorder(id: string, updates: Partial<InsertPostorder>): Promise<Postorder | undefined>;
+  
   // Orders
   getOrders(): Promise<Order[]>;
   getOrder(id: string): Promise<Order | undefined>;
@@ -49,6 +61,7 @@ export interface IStorage {
 export class MemStorage implements IStorage {
   private users: Map<string, User> = new Map();
   private services: Map<string, Service> = new Map();
+  private postorders: Map<string, Postorder> = new Map();
   private orders: Map<string, Order> = new Map();
   private cartItems: Map<string, CartItem> = new Map();
   private messages: Map<string, Message> = new Map();
@@ -143,6 +156,78 @@ export class MemStorage implements IStorage {
     sampleServices.forEach(service => {
       this.services.set(service.id, service);
     });
+
+    // Sample postorders data
+    const samplePostorders: Postorder[] = [
+      {
+        id: "1",
+        vendorid: "vendor1",
+        businessname: "Royal Wedding Services",
+        name: "Rajesh Kumar",
+        mobilenumber: "+91 98765 43210",
+        email: "rajesh@royalwedding.com",
+        eventname: "Wedding",
+        description: "Complete wedding planning and coordination services with premium vendors and personalized attention to detail",
+        category: "Wedding",
+        subcategory: "Full Planning",
+        price: 50000,
+        priceUnit: "per_event",
+        location: "Mumbai, Maharashtra",
+        from: "Mumbai, Pune, Thane, Navi Mumbai",
+        exprience: "8 years",
+        hours: "9 AM - 8 PM, Monday to Sunday",
+        features: ["Venue Selection", "Catering", "Decoration", "Photography", "Transport"],
+        menu: ["Wedding Planning", "Reception Planning", "Engagement Planning"],
+        image: "https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3",
+        coverImage: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-4.0.3",
+        collections: [
+          "https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3",
+          "https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-4.0.3",
+          "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3"
+        ],
+        rating: 48,
+        reviewCount: 25,
+        isVerified: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: "2",
+        vendorid: "vendor2",
+        businessname: "Delicious Catering Co.",
+        name: "Priya Sharma",
+        mobilenumber: "+91 87654 32109",
+        email: "priya@deliciouscatering.com",
+        eventname: "Corporate Event",
+        description: "Professional catering services for corporate events, meetings, and conferences with diverse menu options",
+        category: "Catering",
+        subcategory: "Corporate",
+        price: 450,
+        priceUnit: "per_person",
+        location: "Delhi, NCR",
+        from: "Delhi, Gurgaon, Noida, Faridabad",
+        exprience: "12 years",
+        hours: "7 AM - 11 PM, Monday to Saturday",
+        features: ["Multi-cuisine", "Dietary Restrictions", "Professional Staff", "Equipment"],
+        menu: ["North Indian", "South Indian", "Chinese", "Continental", "Desserts"],
+        image: "https://images.unsplash.com/photo-1555244162-803834f70033?ixlib=rb-4.0.3",
+        coverImage: "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3",
+        collections: [
+          "https://images.unsplash.com/photo-1555244162-803834f70033?ixlib=rb-4.0.3",
+          "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3",
+          "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?ixlib=rb-4.0.3"
+        ],
+        rating: 49,
+        reviewCount: 42,
+        isVerified: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+    ];
+
+    samplePostorders.forEach(postorder => {
+      this.postorders.set(postorder.id, postorder);
+    });
   }
 
   // Users
@@ -214,6 +299,69 @@ export class MemStorage implements IStorage {
     };
     this.services.set(id, service);
     return service;
+  }
+
+  // Postorder (Vendor Services)
+  async getPostorders(): Promise<Postorder[]> {
+    return Array.from(this.postorders.values());
+  }
+
+  async getPostorder(id: string): Promise<Postorder | undefined> {
+    return this.postorders.get(id);
+  }
+
+  async getPostordersByVendor(vendorId: string): Promise<Postorder[]> {
+    return Array.from(this.postorders.values()).filter(postorder => 
+      postorder.vendorid === vendorId
+    );
+  }
+
+  async getPostordersByCategory(category: string): Promise<Postorder[]> {
+    return Array.from(this.postorders.values()).filter(postorder => 
+      postorder.category.toLowerCase() === category.toLowerCase()
+    );
+  }
+
+  async getPostordersByLocation(location: string): Promise<Postorder[]> {
+    const lowerLocation = location.toLowerCase();
+    return Array.from(this.postorders.values()).filter(postorder => 
+      postorder.location.toLowerCase().includes(lowerLocation) ||
+      postorder.from.toLowerCase().includes(lowerLocation)
+    );
+  }
+
+  async searchPostorders(query: string): Promise<Postorder[]> {
+    const lowerQuery = query.toLowerCase();
+    return Array.from(this.postorders.values()).filter(postorder =>
+      postorder.businessname.toLowerCase().includes(lowerQuery) ||
+      postorder.description.toLowerCase().includes(lowerQuery) ||
+      postorder.category.toLowerCase().includes(lowerQuery) ||
+      postorder.eventname.toLowerCase().includes(lowerQuery)
+    );
+  }
+
+  async createPostorder(insertPostorder: InsertPostorder): Promise<Postorder> {
+    const id = randomUUID();
+    const postorder: Postorder = {
+      ...insertPostorder,
+      id,
+      rating: 0,
+      reviewCount: 0,
+      isVerified: false,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.postorders.set(id, postorder);
+    return postorder;
+  }
+
+  async updatePostorder(id: string, updates: Partial<InsertPostorder>): Promise<Postorder | undefined> {
+    const postorder = this.postorders.get(id);
+    if (!postorder) return undefined;
+    
+    const updatedPostorder = { ...postorder, ...updates, updatedAt: new Date() };
+    this.postorders.set(id, updatedPostorder);
+    return updatedPostorder;
   }
 
   // Orders
